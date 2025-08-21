@@ -1,40 +1,52 @@
-// C:\fluter-proyect\vacaciones\my_first_app\functions\api\app.js
 import express from 'express';
-import cors from 'cors';
-import mysql from 'mysql2/promise'; // Aunque no se usa directamente aquí, se pasa via req.dbConfig
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { users } from './utils/db.js';
+import authenticateToken from './middleware/auth.js';
 
-// Importa tus rutas modularizadas
-import authRoutes from './routes/auth.routes.js';
-import usersRoutes from './routes/users.routes.js'; // Asegúrate de que este archivo users.routes.js esté actualizado.
+dotenv.config();
 
 const app = express();
-
-app.use(cors({ origin: true }));
 app.use(express.json());
 
-// Middleware para pasar la configuración de la base de datos en req.dbConfig
-// Esto es correcto y permite que todos los controladores accedan a la configuración de DB
-app.use((req, res, next) => {
-    req.dbConfig = {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        port: 3306,
-    };
-    next();
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password)
+    return res.status(400).json({ error: 'Faltan datos' });
+
+  const userExists = users.find(u => u.username === username);
+  if (userExists)
+    return res.status(409).json({ error: 'El usuario ya existe' });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  users.push({ username, password: hashedPassword });
+
+  res.status(201).json({ message: 'Usuario registrado correctamente' });
 });
 
-// Monta las rutas de autenticación bajo el prefijo /auth
-app.use('/auth', authRoutes);
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
 
-// Monta las rutas de usuarios bajo el prefijo /users
-// ¡CRÍTICO! Esto asume que users.routes.js tendrá las rutas como /me, /me/addresses, etc.
-app.use('/users', usersRoutes);
+  const user = users.find(u => u.username === username);
+  if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
 
-// Ruta de prueba básica (opcional, puedes mantenerla si quieres un endpoint raíz)
-app.get('/', (req, res) => {
-    res.status(200).json({ message: 'API de Delivery funcionando!' });
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return res.status(401).json({ error: 'Credenciales inválidas' });
+
+  const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, {
+    expiresIn: '1h',
+  });
+
+  res.json({ token });
 });
 
-export default app; // Exporta la aplicación Express
+app.get('/perfil', authenticateToken, (req, res) => {
+  res.json({ message: `Hola, ${req.user.username}` });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
