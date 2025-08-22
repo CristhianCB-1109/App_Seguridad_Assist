@@ -11,18 +11,17 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Ruta para registrar un nuevo usuario
 router.post('/register', async (req, res) => {
   console.log('Petición de registro recibida.'); // Log de inicio de petición
-  const { correo, contrasena, rol, telefono, foto } = req.body;
+  const { email, contrasena, rol, telefono, foto } = req.body;
 
   // Aseguramos que telefono y foto sean null si no están presentes
   const telefonoFinal = telefono || null;
   const fotoFinal = foto || null;
 
-  console.log('Datos de la petición:', { correo, rol, telefono: telefonoFinal, foto: fotoFinal }); // Log de datos recibidos
+  console.log('Datos de la petición:', { email, rol, telefono: telefonoFinal, foto: fotoFinal }); // Log de datos recibidos
 
   try {
     // 1. Verificar si el usuario ya existe
-    // CORRECCIÓN: 'ususarios' se ha cambiado a 'usuarios'
-    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [email]);
     if (rows.length > 0) {
       console.log('Intento de registro fallido: el usuario ya existe.');
       return res.status(400).json({ success: false, message: 'El usuario ya existe.' });
@@ -34,10 +33,9 @@ router.post('/register', async (req, res) => {
     console.log('Contraseña encriptada correctamente.');
 
     // 3. Guardar el nuevo usuario en la DB
-    // CORRECCIÓN: 'ususarios' se ha cambiado a 'usuarios'
     const query = 'INSERT INTO usuarios (correo, contrasena, rol, telefono, foto) VALUES (?, ?, ?, ?, ?)';
-    await db.execute(query, [correo, hashedPassword, rol, telefonoFinal, fotoFinal]);
-    console.log('Usuario registrado en la base de datos:', correo);
+    await db.execute(query, [email, hashedPassword, rol, telefonoFinal, fotoFinal]);
+    console.log('Usuario registrado en la base de datos:', email);
 
     res.status(201).json({ success: true, message: 'Usuario registrado exitosamente.' });
     console.log('Petición de registro completada con éxito.');
@@ -50,13 +48,12 @@ router.post('/register', async (req, res) => {
 // Ruta para el login de usuario
 router.post('/login', async (req, res) => {
   console.log('Petición de login recibida.'); // Log de inicio de petición
-  const { correo, contrasena } = req.body;
-  console.log('Datos de login recibidos:', { correo });
+  const { email, contrasena } = req.body;
+  console.log('Datos de login recibidos:', { email });
 
   try {
     // 1. Verificar si el usuario existe
-    // CORRECCIÓN: 'ususarios' se ha cambiado a 'usuarios'
-    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [email]);
     if (rows.length === 0) {
       console.log('Intento de login fallido: el usuario no existe.');
       return res.status(400).json({ success: false, message: 'Credenciales inválidas.' });
