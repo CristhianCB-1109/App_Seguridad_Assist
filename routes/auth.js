@@ -9,24 +9,19 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Ruta para registrar un nuevo usuario
+// ...
 router.post('/register', async (req, res) => {
   const { correo, contrasena, rol, telefono, foto } = req.body;
+
+  // Aseguramos que telefono y foto sean null si no están presentes
+  const telefonoFinal = telefono || null;
+  const fotoFinal = foto || null;
+
   try {
-    // 1. Verificar si el usuario ya existe
-    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [correo]);
-    if (rows.length > 0) {
-      return res.status(400).json({ msg: 'El usuario ya existe' });
-    }
-
-    // 2. Encriptar la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(contrasena, salt);
-
-    // 3. Guardar el nuevo usuario en la DB
+    // ...
     const query = 'INSERT INTO usuarios (correo, contrasena, rol, telefono, foto) VALUES (?, ?, ?, ?, ?)';
-    await db.execute(query, [correo, hashedPassword, rol, telefono, foto]);
-
-    res.status(201).json({ msg: 'Usuario registrado exitosamente' });
+    await db.execute(query, [correo, hashedPassword, rol, telefonoFinal, fotoFinal]); // <-- ¡Ahora enviamos valores válidos!
+    // ...
   } catch (e) {
     console.error(e.message);
     res.status(500).send('Error del servidor');
