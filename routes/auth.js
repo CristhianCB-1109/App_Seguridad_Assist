@@ -10,18 +10,18 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Ruta para registrar un nuevo usuario
 router.post('/register', async (req, res) => {
-  console.log('Petición de registro recibida.'); // Log de inicio de petición
+  console.log('Petición de registro recibida.');
   const { email, contrasena, rol, telefono, foto } = req.body;
 
   // Aseguramos que telefono y foto sean null si no están presentes
   const telefonoFinal = telefono || null;
   const fotoFinal = foto || null;
 
-  console.log('Datos de la petición:', { email, rol, telefono: telefonoFinal, foto: fotoFinal }); // Log de datos recibidos
+  console.log('Datos de la petición:', { email, rol, telefono: telefonoFinal, foto: fotoFinal });
 
   try {
     // 1. Verificar si el usuario ya existe
-    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [email]);
+    const [rows] = await db.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
     if (rows.length > 0) {
       console.log('Intento de registro fallido: el usuario ya existe.');
       return res.status(400).json({ success: false, message: 'El usuario ya existe.' });
@@ -33,34 +33,34 @@ router.post('/register', async (req, res) => {
     console.log('Contraseña encriptada correctamente.');
 
     // 3. Guardar el nuevo usuario en la DB
-    const query = 'INSERT INTO usuarios (correo, contrasena, rol, telefono, foto) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO usuarios (email, contrasena, rol, telefono, foto) VALUES (?, ?, ?, ?, ?)';
     await db.execute(query, [email, hashedPassword, rol, telefonoFinal, fotoFinal]);
     console.log('Usuario registrado en la base de datos:', email);
 
     res.status(201).json({ success: true, message: 'Usuario registrado exitosamente.' });
     console.log('Petición de registro completada con éxito.');
   } catch (e) {
-    console.error('Error en el registro:', e.message); // Log del error exacto
+    console.error('Error en el registro:', e.message);
     res.status(500).json({ success: false, message: 'Error del servidor: ' + e.message });
   }
 });
 
 // Ruta para el login de usuario
 router.post('/login', async (req, res) => {
-  console.log('Petición de login recibida.'); // Log de inicio de petición
+  console.log('Petición de login recibida.');
   const { email, contrasena } = req.body;
   console.log('Datos de login recibidos:', { email });
 
   try {
     // 1. Verificar si el usuario existe
-    const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [email]);
+    const [rows] = await db.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
     if (rows.length === 0) {
       console.log('Intento de login fallido: el usuario no existe.');
       return res.status(400).json({ success: false, message: 'Credenciales inválidas.' });
     }
 
     const user = rows[0];
-    console.log('Usuario encontrado en la base de datos:', user.correo);
+    console.log('Usuario encontrado en la base de datos:', user.email);
 
     // 2. Comparar la contraseña ingresada con la encriptada
     const isMatch = await bcrypt.compare(contrasena, user.contrasena);
@@ -93,7 +93,7 @@ router.post('/login', async (req, res) => {
 
 // Ruta de ejemplo para probar la autenticación
 router.get('/protected', authMiddleware, (req, res) => {
-  console.log('Acceso a ruta protegida concedido para:', req.user.correo);
+  console.log('Acceso a ruta protegida concedido para:', req.user.email);
   res.json({ success: true, msg: 'Bienvenido! Has accedido a una ruta protegida.', user: req.user });
 });
 
