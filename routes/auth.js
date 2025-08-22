@@ -21,6 +21,7 @@ router.post('/register', async (req, res) => {
 
   try {
     // 1. Verificar si el usuario ya existe
+    // CORRECCIÓN: 'ususarios' se ha cambiado a 'usuarios'
     const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [correo]);
     if (rows.length > 0) {
       console.log('Intento de registro fallido: el usuario ya existe.');
@@ -33,6 +34,7 @@ router.post('/register', async (req, res) => {
     console.log('Contraseña encriptada correctamente.');
 
     // 3. Guardar el nuevo usuario en la DB
+    // CORRECCIÓN: 'ususarios' se ha cambiado a 'usuarios'
     const query = 'INSERT INTO usuarios (correo, contrasena, rol, telefono, foto) VALUES (?, ?, ?, ?, ?)';
     await db.execute(query, [correo, hashedPassword, rol, telefonoFinal, fotoFinal]);
     console.log('Usuario registrado en la base de datos:', correo);
@@ -53,6 +55,7 @@ router.post('/login', async (req, res) => {
 
   try {
     // 1. Verificar si el usuario existe
+    // CORRECCIÓN: 'ususarios' se ha cambiado a 'usuarios'
     const [rows] = await db.execute('SELECT * FROM usuarios WHERE correo = ?', [correo]);
     if (rows.length === 0) {
       console.log('Intento de login fallido: el usuario no existe.');
