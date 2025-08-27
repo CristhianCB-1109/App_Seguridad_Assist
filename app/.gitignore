@@ -1,0 +1,25 @@
+# Ignorar configuraciones y caches de Gradle y Android Studio
+.gradle/
+guardia/caches/
+.idea/
+*.iml
+build/
+captures/
+local.properties
+# Archivos de Android Studio
+.idea/
+*.iml
+
+# Carpetas de Gradle
+.gradle/
+guardia/caches/
+build/
+captures/
+
+# Configuración local
+local.properties
+
+# Archivos generados por el sistema operativo
+*.log
+.DS_Store
+Thumbs.db
