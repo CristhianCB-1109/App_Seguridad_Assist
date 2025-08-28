@@ -82,7 +82,7 @@ router.post('/login', async (req, res) => {
         console.error('Error al generar token:', err.message);
         return res.status(500).json({ success: false, message: 'Error al generar token.' });
       }
-      res.json({ success: true, token, message: 'Inicio de sesión exitoso.' });
+      res.json({ success: true, token, message: 'Inicio de sesión exitoso.', rol: user.rol });
       console.log('Token generado y login completado con éxito.');
     });
   } catch (e) {
