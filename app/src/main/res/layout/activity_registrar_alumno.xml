@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/qrScanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/tvTituloRegistrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escanea el QR del alumno"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="top|center_horizontal"
+        android:padding="16dp"
+        android:background="#80000000"
+        android:textColor="@android:color/white"/>
+
+</FrameLayout>
+

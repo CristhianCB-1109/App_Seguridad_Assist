@@ -1,5 +1,5 @@
 package com.example.guardia
-// importamos las librerias necesarias
+
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity

@@ -94,21 +94,25 @@ fun LoginScreen() {
                     var result: LoginResult
 
                     try {
-                        // Login intentando con la API
-                        val errorMessage = loginUser(email, password)
-                        if (errorMessage == null) {
-                            // Rol mock (hasta que la API devuelva rol real)
-                            val rol = when {
-                                email.contains("alumno", ignoreCase = true) -> "alumno"
-                                email.contains("seguridad", ignoreCase = true) -> "seguridad"
-                                else -> "otro"
-                            }
-                            result = LoginResult(rol = rol, id = "API_USER")
+                        if (email.lowercase() == "alumno@ejemplo.com" || email.lowercase() == "seguridad@ejemplo.com") {
+                            // Forzamos datos mock para la prueba
+                            result = mockLogin(email, password)
                         } else {
-                            result = LoginResult(errorMessage = errorMessage)
+                            // Intentar API
+                            val errorMessage = loginUser(email, password)
+                            if (errorMessage == null) {
+
+                                val rol = when {
+                                    email.contains("alumno", ignoreCase = true) -> "alumno"
+                                    email.contains("seguridad", ignoreCase = true) -> "seguridad"
+                                    else -> "otro"
+                                }
+                                result = LoginResult(rol = rol, id = "API_USER")
+                            } else {
+                                result = LoginResult(errorMessage = errorMessage)
+                            }
                         }
                     } catch (e: Exception) {
-                        //Si la API falla se usara mock
                         result = mockLogin(email, password)
                     }
 

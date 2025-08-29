@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -51,7 +53,15 @@
             android:label="Seguridad"
             android:theme="@style/Theme.Guardia" />
 
+        <activity
+            android:name=".RegistrarAlumnoActivity"
+            android:label="Registrar Alumno"
+            android:theme="@style/Theme.Guardia" />
 
+        <activity
+            android:name=".HistorialActivity"
+            android:label="Historial"
+            android:theme="@style/Theme.Guardia" />
 
     </application>
 
