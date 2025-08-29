@@ -49,10 +49,16 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   console.log('Petición de login recibida.');
   const { email, contrasena } = req.body;
-  console.log('Datos de login recibidos:', { email });
+  console.log('Datos de login recibidos:', { email, contrasena });
+
+  // 1. **Validación de datos de entrada**
+  if (!email || !contrasena) {
+    console.error('Error: Faltan datos obligatorios para el login.');
+    return res.status(400).json({ success: false, message: 'Faltan campos obligatorios: correo y contraseña.' });
+  }
 
   try {
-    // 1. Verificar si el usuario existe
+    // 2. Verificar si el usuario existe
     const [rows] = await db.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
     if (rows.length === 0) {
       console.log('Intento de login fallido: el usuario no existe.');
@@ -62,7 +68,7 @@ router.post('/login', async (req, res) => {
     const user = rows[0];
     console.log('Usuario encontrado en la base de datos:', user.email);
 
-    // 2. Comparar la contraseña ingresada con la encriptada
+    // 3. Comparar la contraseña ingresada con la encriptada
     const isMatch = await bcrypt.compare(contrasena, user.contrasena);
     if (!isMatch) {
       console.log('Intento de login fallido: contraseña incorrecta.');
@@ -70,7 +76,7 @@ router.post('/login', async (req, res) => {
     }
     console.log('Contraseña verificada correctamente.');
 
-    // 3. Generar un token JWT
+    // 4. Generar un token JWT
     const payload = {
       user: {
         id: user.id_usuario,
