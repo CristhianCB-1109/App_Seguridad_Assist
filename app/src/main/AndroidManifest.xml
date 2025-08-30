@@ -62,6 +62,10 @@
             android:name=".HistorialActivity"
             android:label="Historial"
             android:theme="@style/Theme.Guardia" />
+        
+        <activity android:name=".RegistroInvitadoActivity"
+            android:label="registro invitado"
+            android:theme="@style/Theme.Guardia"/>
 
     </application>
 

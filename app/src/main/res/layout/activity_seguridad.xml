@@ -54,7 +54,7 @@
             android:fontFamily="sans-serif-medium"/>
 
         <Button
-            android:id="@+id/btnReportes"
+            android:id="@+id/btnInvitado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Registrar A Un Invitado"
@@ -65,7 +65,7 @@
             android:fontFamily="sans-serif-medium"/>
 
         <Button
-            android:id="@+id/btnOtraOpcion"
+            android:id="@+id/btnHistorialInvitado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ver Historial De Un Invitado"

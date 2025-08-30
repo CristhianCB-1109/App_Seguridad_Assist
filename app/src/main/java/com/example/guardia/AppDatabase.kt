@@ -5,11 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [RegistroAlumno::class], version = 1)
+@Database(entities = [RegistroInvitado::class ,RegistroAlumno::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun registroAlumnoDao(): RegistroAlumnoDao
-
+    abstract fun registroInvitadoDao(): RegistroInvitadoDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -26,4 +26,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
     }
+
 }
+

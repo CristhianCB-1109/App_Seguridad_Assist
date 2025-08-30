@@ -25,6 +25,15 @@ class SeguridadActivity : AppCompatActivity() {
         btnHistorial.setOnClickListener {
             startActivity(Intent(this, HistorialActivity::class.java))
         }
+        val btnInvitado = findViewById<Button>(R.id.btnInvitado)
+        btnInvitado.setOnClickListener {
+            startActivity(Intent(this, RegistroInvitadoActivity::class.java))
+        }
+
+        val btnHistorialInvitado = findViewById<Button>(R.id.btnHistorialInvitado)
+        btnHistorial.setOnClickListener {
+            startActivity(Intent(this, HistorialInvitado::class.java))
+        }
 
         val btnCerrarSesion = findViewById<Button>(R.id.btnCerrarSesionSeguridad)
         btnCerrarSesion.setOnClickListener {

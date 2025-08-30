@@ -12,4 +12,5 @@ interface RegistroAlumnoDao {
 
     @Query("SELECT * FROM registro_alumno ORDER BY id DESC")
     suspend fun obtenerHistorial(): List<RegistroAlumno>
+
 }
