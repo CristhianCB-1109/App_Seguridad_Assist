@@ -31,7 +31,7 @@ class SeguridadActivity : AppCompatActivity() {
         }
 
         val btnHistorialInvitado = findViewById<Button>(R.id.btnHistorialInvitado)
-        btnHistorial.setOnClickListener {
+        btnHistorialInvitado.setOnClickListener {
             startActivity(Intent(this, HistorialInvitado::class.java))
         }
 
