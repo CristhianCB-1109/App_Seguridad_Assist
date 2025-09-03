@@ -22,7 +22,8 @@ data class AlumnoResponse(
     val id: String,
     val nombre: String,
     val carrera: String,
-    val fotoUrl: String
+    val foto: String,
+    val codigo_estudiante: String
 )
 
 // Definimos los objetos de datos (DTOs) para las peticiones
@@ -33,9 +34,16 @@ data class LoginRequest(
 
 data class LoginResponse(
     val success: Boolean,
-    val message: String
+    val message: String?,
+    val rol: String?,
+    val id: String?,
+    val nombre: String?,
+    val codigo_estudiante: String?,
+    val carrera: String?,
+    val foto: String?,
+    val telefono: String?,
+    val dni: String?
 )
-
 data class RegisterRequest(
     val email: String,
     val contrasena: String,

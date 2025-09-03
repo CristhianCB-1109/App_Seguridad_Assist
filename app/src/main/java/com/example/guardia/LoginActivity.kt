@@ -91,31 +91,7 @@ fun LoginScreen() {
 
                 isLoading = true
                 coroutineScope.launch {
-                    var result: LoginResult
-
-                    try {
-                        if (email.lowercase() == "alumno@ejemplo.com" || email.lowercase() == "seguridad@ejemplo.com") {
-                            // Forzamos datos mock para la prueba
-                            result = mockLogin(email, password)
-                        } else {
-                            // Intentar API
-                            val errorMessage = loginUser(email, password)
-                            if (errorMessage == null) {
-
-                                val rol = when {
-                                    email.contains("alumno", ignoreCase = true) -> "alumno"
-                                    email.contains("seguridad", ignoreCase = true) -> "seguridad"
-                                    else -> "otro"
-                                }
-                                result = LoginResult(rol = rol, id = "API_USER")
-                            } else {
-                                result = LoginResult(errorMessage = errorMessage)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        result = mockLogin(email, password)
-                    }
-
+                    val result = login(email, password)
                     isLoading = false
 
                     if (result.errorMessage != null) {
@@ -130,23 +106,34 @@ fun LoginScreen() {
                             "Inicio de sesión exitoso",
                             Toast.LENGTH_SHORT
                         ).show()
-
+                        //Funcion en el rol
                         when (result.rol) {
                             "alumno" -> {
                                 context.startActivity(
                                     Intent(context, FaceAlumnoActivity::class.java).apply {
                                         putExtra("id", result.id)
-                                        putExtra("nombre", "Juan Pérez") // mock
-                                        putExtra("carrera", "Ingeniería de Software") // mock
-                                        putExtra("fotoUrl", "https://picsum.photos/200") // mock
+                                        putExtra("nombre", result.nombre)
+                                        putExtra("carrera", result.carrera)
+                                        putExtra("fotoUrl", result.foto)
+                                        putExtra("telefono", result.telefono)
+                                        putExtra("dni", result.dni)
                                     }
                                 )
                             }
                             "seguridad" -> {
-                                context.startActivity(Intent(context, SeguridadActivity::class.java))
+                                context.startActivity(
+                                    Intent(context, SeguridadActivity::class.java).apply {
+                                        putExtra("id", result.id)
+                                        putExtra("nombre", result.nombre)
+                                        putExtra("dni", result.dni)
+                                        putExtra("fotoUrl", result.foto)
+                                    }
+                                )
                             }
                             else -> {
-                                context.startActivity(Intent(context, GestionActivity::class.java))
+                                context.startActivity(
+                                    Intent(context, GestionActivity::class.java)
+                                )
                             }
                         }
                     }
@@ -198,60 +185,71 @@ fun LoginScreenPreview() {
         LoginScreen()
     }
 }
-//Login con Mock
-
-suspend fun mockLogin(email: String, password: String): LoginResult {
-    return when (email.lowercase()) {
-        "alumno@ejemplo.com" -> LoginResult(rol = "alumno", id = "A2025001")
-        "seguridad@ejemplo.com" -> LoginResult(rol = "seguridad", id = "S2025001")
-        else -> LoginResult(errorMessage = "Usuario o contraseña incorrectos")
-    }
-}
-
 data class LoginResult(
     val errorMessage: String? = null,
     val rol: String? = null,
-    val id: String? = null
+    val id: String? = null,
+    val nombre: String? = null,
+    val codigoEstudiante: String? = null,
+    val carrera: String? = null,
+    val foto: String? = null,
+    val telefono: String? = null,
+    val dni: String? = null
 )
 
 //Login con API
-suspend fun loginUser(email: String, contrasena: String): String? {
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://j-c-g.apis-s.site/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiService = retrofit.create(ApiService::class.java)
-
+suspend fun login(email: String, password: String): LoginResult {
     return try {
-        val response = apiService.login(LoginRequest(email, contrasena))
+        // Intentar API
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://j-c-g.apis-s.site/") // 🔑 tu API
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+        val response = apiService.login(LoginRequest(email, password))
+
         if (response.isSuccessful && response.body()?.success == true) {
-            null //
+            val data = response.body()!!
+
+            //datos de la API
+            LoginResult(
+                rol = data.rol,
+                id = data.id,
+                nombre = data.nombre,
+                codigoEstudiante = data.codigo_estudiante,
+                carrera = data.carrera,
+                foto = data.foto,
+                telefono = data.telefono,
+                dni = data.dni
+            )
         } else {
-            response.body()?.message ?: "Credenciales incorrectas"
+            LoginResult(errorMessage = response.body()?.message ?: "Credenciales incorrectas")
         }
     } catch (e: Exception) {
-        throw e
+        // fallo usa mock
+        mockLogin(email, password)
     }
 }
-/*
-// Función para iniciar sesión usando la API (Gandy)
-suspend fun loginUser(email: String, contrasena: String): String? {
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://j-c-g.apis-s.site/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiService = retrofit.create(ApiService::class.java)
-
-    return try {
-        val response = apiService.login(LoginRequest(email = email, contrasena = contrasena))
-        if (response.isSuccessful && response.body()?.success == true) {
-            null
-        } else {
-            response.body()?.message ?: "Credenciales incorrectas"
-        }
-    } catch (e: Exception) {
-        "Error de red: ${e.message}"
+suspend fun mockLogin(email: String, password: String): LoginResult {
+    return when (email.lowercase()) {
+        "alumno@ejemplo.com" -> LoginResult(
+            rol = "alumno",
+            id = "A2025001",
+            nombre = "Juan Pérez",
+            codigoEstudiante = "A2025001",
+            carrera = "Ingeniería de Software",
+            foto = "https://picsum.photos/200",
+            telefono = "987654321",
+            dni = "12345678"
+        )
+        "seguridad@ejemplo.com" -> LoginResult(
+            rol = "seguridad",
+            id = "S2025001",
+            nombre = "Carlos Ramírez",
+            dni = "87654321",
+            foto = "https://picsum.photos/201"
+        )
+        else -> LoginResult(errorMessage = "Usuario o contraseña incorrectos")
     }
-} */
+}

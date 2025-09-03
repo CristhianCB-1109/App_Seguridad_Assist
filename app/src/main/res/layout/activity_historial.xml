@@ -14,6 +14,17 @@
         android:textStyle="bold"
         android:paddingBottom="8dp"/>
 
+    <TextView
+        android:id="@+id/tvVacio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No hay registros disponibles"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:textStyle="italic"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHistorial"
         android:layout_width="match_parent"

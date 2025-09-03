@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:gravity="center"
-    android:background="@android:color/background_light"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
     <TextView
@@ -14,16 +14,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Datos del Alumno"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:textColor="#0D47A1"
+        android:layout_marginBottom="20dp"/>
 
     <FrameLayout
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:background="@android:color/darker_gray"
-        android:padding="8dp"
-        android:layout_marginBottom="20dp">
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:background="#E3F2FD"
+        android:padding="12dp"
+        android:layout_marginBottom="24dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:elevation="4dp">
 
         <ImageView
             android:id="@+id/qrImagen"
@@ -37,45 +40,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@android:color/white"
-        android:elevation="6dp"
-        android:padding="16dp"
-        android:layout_margin="8dp"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:padding="20dp"
+        android:layout_margin="12dp"
         android:gravity="center"
         android:layout_gravity="center"
-        android:clipToOutline="true">
+        android:clipToOutline="true"
+        android:backgroundTint="#FFFFFF"
+        android:foreground="?attr/selectableItemBackgroundBorderless">
+
 
         <ImageView
             android:id="@+id/imgFoto"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:scaleType="centerCrop"
-            android:background="@android:color/darker_gray"
-            android:layout_marginBottom="12dp"/>
+            android:background="#E0E0E0"
+            android:layout_marginBottom="14dp"/>
 
         <TextView
             android:id="@+id/tvNombreAlumno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="6dp"
-            android:textColor="@android:color/black"/>
+            android:textColor="#0D47A1"
+            android:layout_marginBottom="8dp"/>
 
         <TextView
             android:id="@+id/tvCodigoAlumno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:layout_marginBottom="6dp"
-            android:textColor="@android:color/black"/>
+            android:textColor="#212121"
+            android:layout_marginBottom="6dp"/>
 
         <TextView
             android:id="@+id/tvCarreraAlumno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textColor="#424242"/>
     </LinearLayout>
 
     <Button
@@ -83,8 +89,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cerrar Sesión"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="#1976D2"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:elevation="4dp"/>
 
 </LinearLayout>
-

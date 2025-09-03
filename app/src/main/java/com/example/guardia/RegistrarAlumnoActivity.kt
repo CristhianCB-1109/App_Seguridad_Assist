@@ -7,23 +7,24 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
 
 class RegistrarAlumnoActivity : AppCompatActivity() {
 
     private lateinit var qrScannerView: DecoratedBarcodeView
-
     private val CAMERA_PERMISSION_CODE = 100
 
-    //evitar duplicados de QR consecutivos
+    // Evitar duplicados de QR consecutivos
     private val qrEscaneadosRecientemente = ConcurrentHashMap<String, Long>()
-    private val TIEMPO_BLOQUEO_MS = 5000L // 5 segundos para evitar duplicados
+    private val TIEMPO_BLOQUEO_MS = 5000L // 5 segundos
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,7 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
 
         qrScannerView = findViewById(R.id.qrScanner)
 
-        // verificar permiso de cámara
+        // Verificar permiso de cámara
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED
         ) {
@@ -50,22 +51,32 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
             override fun barcodeResult(result: BarcodeResult?) {
                 result?.text?.let { qrData ->
                     val ahora = System.currentTimeMillis()
+
                     // Evitar duplicados recientes
                     if (qrEscaneadosRecientemente[qrData]?.let { ahora - it < TIEMPO_BLOQUEO_MS } == true) {
                         return
                     }
                     qrEscaneadosRecientemente[qrData] = ahora
 
-                    if (isQRActivo(qrData)) {
-                        val alumno = obtenerDatosAlumno(qrData)
-                        qrScannerView.pause() // Pausar escáner
-                        mostrarDialogoConfirmacion(alumno)
-                    } else {
-                        Toast.makeText(
-                            this@RegistrarAlumnoActivity,
-                            "QR vencido",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    try {
+                        val json = JSONObject(qrData)
+
+                        val id = json.getString("id")
+                        val nombre = json.getString("nombre")
+                        val carrera = json.getString("carrera")
+                        val codigo = json.getString("codigo_estudiante")
+                        val foto = json.getString("foto")
+                        val timestamp = json.getLong("timestamp")
+
+                        if (isQRActivo(timestamp)) {
+                            val alumno = Alumno(id, nombre, carrera, codigo, foto)
+                            qrScannerView.pause()
+                            mostrarDialogoConfirmacion(alumno)
+                        } else {
+                            Toast.makeText(this@RegistrarAlumnoActivity, "QR vencido", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this@RegistrarAlumnoActivity, "QR inválido", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -74,33 +85,9 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
         })
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                iniciarEscaner()
-            } else {
-                Toast.makeText(this, "Se necesita el permiso de cámara", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    private fun isQRActivo(qrData: String): Boolean {
-        val partes = qrData.split("|")
-        if (partes.size < 2) return false
-        val timestamp = partes[1].toLongOrNull() ?: return false
+    private fun isQRActivo(timestamp: Long): Boolean {
         val ahora = System.currentTimeMillis() / 1000
-        return ahora - timestamp <= 40
-    }
-
-    private fun obtenerDatosAlumno(qrData: String): Alumno {
-        val alumnoId = qrData.split("|")[0]
-        return Alumno(alumnoId, "Juan Pérez", "Ingeniería de Software")
+        return ahora - timestamp <= 40 // 40 segundos de validez
     }
 
     private fun mostrarDialogoConfirmacion(alumno: Alumno) {
@@ -114,11 +101,14 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
         val btnCancelar = dialogView.findViewById<Button>(R.id.btnNoRegistrar)
 
         tvNombre.text = "Nombre: ${alumno.nombre}"
-        tvCodigo.text = "Código: ${alumno.id}"
+        tvCodigo.text = "Código: ${alumno.codigo}"
         tvCarrera.text = "Carrera: ${alumno.carrera}"
 
-        // Imagen por defecto (Despues API  )
-        ivFoto.setImageResource(R.drawable.ic_person)
+        if (alumno.foto.isNotEmpty()) {
+            Glide.with(this).load(alumno.foto).into(ivFoto)
+        } else {
+            ivFoto.setImageResource(R.drawable.ic_person)
+        }
 
         val dialog = android.app.AlertDialog.Builder(this)
             .setView(dialogView)
@@ -126,7 +116,7 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
             .create()
 
         btnRegistrar.setOnClickListener {
-            guardarRegistro(alumno.id, alumno.nombre, alumno.carrera)
+            guardarRegistro(alumno)
             Toast.makeText(this, "Registro guardado", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
             qrScannerView.resume()
@@ -141,21 +131,31 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun guardarRegistro(codigo: String, nombre: String, carrera: String) {
+    private fun guardarRegistro(alumno: Alumno) {
         val dao = AppDatabase.getDatabase(this).registroAlumnoDao()
-
-        val fechaHora = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-            .format(java.util.Date())
+        val fechaHora = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
 
         val registro = RegistroAlumno(
-            codigo = codigo,
-            nombre = nombre,
-            carrera = carrera,
+            codigo = alumno.codigo,
+            nombre = alumno.nombre,
+            carrera = alumno.carrera,
             fechaHora = fechaHora
         )
 
         CoroutineScope(Dispatchers.IO).launch {
             dao.insertarRegistro(registro)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                iniciarEscaner()
+            } else {
+                Toast.makeText(this, "Se necesita el permiso de cámara", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -170,7 +170,14 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
     }
 }
 
-data class Alumno(val id: String, val nombre: String, val carrera: String)
+// Modelo de Alumno local
+data class Alumno(
+    val id: String,
+    val nombre: String,
+    val carrera: String,
+    val codigo: String,
+    val foto: String
+)
 
 
 

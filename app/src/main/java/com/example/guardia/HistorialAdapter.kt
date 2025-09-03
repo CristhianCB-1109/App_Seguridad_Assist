@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HistorialAdapter(private val lista: List<RegistroAlumno>) :
     RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder>() {
@@ -27,8 +29,19 @@ class HistorialAdapter(private val lista: List<RegistroAlumno>) :
         holder.tvNombre.text = registro.nombre
         holder.tvCodigo.text = "Código: ${registro.codigo}"
         holder.tvCarrera.text = "Carrera: ${registro.carrera}"
-        holder.tvFechaHora.text = registro.fechaHora
+
+        // Formato fecha/hora
+        try {
+            val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val formatoDeseado = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+            val fecha = formatoOriginal.parse(registro.fechaHora)
+            holder.tvFechaHora.text = formatoDeseado.format(fecha!!)
+        } catch (e: Exception) {
+            holder.tvFechaHora.text = registro.fechaHora
+        }
     }
 
     override fun getItemCount(): Int = lista.size
 }
+
+
