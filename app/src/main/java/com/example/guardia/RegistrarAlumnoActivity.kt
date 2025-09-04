@@ -80,7 +80,6 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun possibleResultPoints(resultPoints: MutableList<com.google.zxing.ResultPoint>?) {}
         })
     }
@@ -115,35 +114,54 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
             .setCancelable(false)
             .create()
 
-        btnRegistrar.setOnClickListener {
-            guardarRegistro(alumno)
-            Toast.makeText(this, "Registro guardado", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-            qrScannerView.resume()
-        }
+        // Verificar si es entrada o salida
+        val dao = AppDatabase.getDatabase(this).registroAlumnoDao()
+        CoroutineScope(Dispatchers.IO).launch {
+            val ultimoRegistro = dao.obtenerUltimoRegistro(alumno.codigo)
 
-        btnCancelar.setOnClickListener {
-            Toast.makeText(this, "No registrado", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-            qrScannerView.resume()
-        }
+            runOnUiThread {
+                if (ultimoRegistro != null && ultimoRegistro.fechasalida == null) {
+                    btnRegistrar.text = "Marcar salida"
+                } else {
+                    btnRegistrar.text = "Marcar entrada"
+                }
 
+                btnRegistrar.setOnClickListener {
+                    guardarRegistro(alumno)
+                    Toast.makeText(this@RegistrarAlumnoActivity, "Registro guardado", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    qrScannerView.resume()
+                }
+
+                btnCancelar.setOnClickListener {
+                    Toast.makeText(this@RegistrarAlumnoActivity, "No registrado", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    qrScannerView.resume()
+                }
+            }
+        }
         dialog.show()
     }
 
     private fun guardarRegistro(alumno: Alumno) {
         val dao = AppDatabase.getDatabase(this).registroAlumnoDao()
-        val fechaHora = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
-
-        val registro = RegistroAlumno(
-            codigo = alumno.codigo,
-            nombre = alumno.nombre,
-            carrera = alumno.carrera,
-            fechaHora = fechaHora
-        )
-
         CoroutineScope(Dispatchers.IO).launch {
-            dao.insertarRegistro(registro)
+            val ultimoRegistro = dao.obtenerUltimoRegistro(alumno.codigo)
+            val horaActual = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
+
+            if (ultimoRegistro != null && ultimoRegistro.fechasalida == null) {
+                // Registrar salida
+                dao.registrarSalida(ultimoRegistro.id, horaActual)
+            } else {
+                // Registrar nueva entrada
+                val registro = RegistroAlumno(
+                    codigo = alumno.codigo,
+                    nombre = alumno.nombre,
+                    carrera = alumno.carrera,
+                    fechaentrada = horaActual
+                )
+                dao.insertarRegistro(registro)
+            }
         }
     }
 
@@ -154,7 +172,7 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 iniciarEscaner()
             } else {
-                Toast.makeText(this, "Se necesita el permiso de cámara", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@RegistrarAlumnoActivity, "Se necesita el permiso de cámara", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -170,7 +188,6 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
     }
 }
 
-// Modelo de Alumno local
 data class Alumno(
     val id: String,
     val nombre: String,
@@ -178,6 +195,7 @@ data class Alumno(
     val codigo: String,
     val foto: String
 )
+
 
 
 

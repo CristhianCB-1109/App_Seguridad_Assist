@@ -15,7 +15,8 @@ class HistorialAdapter(private val lista: List<RegistroAlumno>) :
         val tvNombre: TextView = itemView.findViewById(R.id.tvNombre)
         val tvCodigo: TextView = itemView.findViewById(R.id.tvCodigo)
         val tvCarrera: TextView = itemView.findViewById(R.id.tvCarrera)
-        val tvFechaHora: TextView = itemView.findViewById(R.id.tvFechaHora)
+        val tvEntrada: TextView = itemView.findViewById(R.id.tvEntrada)
+        val tvSalida: TextView = itemView.findViewById(R.id.tvSalida)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistorialViewHolder {
@@ -30,18 +31,34 @@ class HistorialAdapter(private val lista: List<RegistroAlumno>) :
         holder.tvCodigo.text = "Código: ${registro.codigo}"
         holder.tvCarrera.text = "Carrera: ${registro.carrera}"
 
-        // Formato fecha/hora
-        try {
-            val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            val formatoDeseado = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
-            val fecha = formatoOriginal.parse(registro.fechaHora)
-            holder.tvFechaHora.text = formatoDeseado.format(fecha!!)
+        val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val formatoDeseado = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+
+        // Entrada
+        val entrada = try {
+            val fecha = formatoOriginal.parse(registro.fechaentrada)
+            formatoDeseado.format(fecha!!)
         } catch (e: Exception) {
-            holder.tvFechaHora.text = registro.fechaHora
+            registro.fechaentrada
+        }
+        holder.tvEntrada.text = "Entrada: $entrada"
+
+        // Salida
+        if (registro.fechasalida != null) {
+            val salida = try {
+                val fecha = formatoOriginal.parse(registro.fechasalida)
+                formatoDeseado.format(fecha!!)
+            } catch (e: Exception) {
+                registro.fechasalida
+            }
+            holder.tvSalida.text = "Salida: $salida"
+        } else {
+            holder.tvSalida.text = "Salida: ---"
         }
     }
-
     override fun getItemCount(): Int = lista.size
 }
+
+
 
 

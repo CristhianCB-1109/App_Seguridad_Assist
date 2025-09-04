@@ -3,47 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFFFFF"
-    android:layout_margin="8dp"
-    android:elevation="4dp"
-    android:clipToOutline="true">
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:elevation="2dp"
+    android:layout_marginBottom="8dp">
 
     <TextView
         android:id="@+id/tvNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nombre del Alumno"
-        android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#0D47A1"
-        android:layout_marginBottom="6dp"/>
+        android:textSize="18sp"
+        android:textColor="#212121" />
 
     <TextView
         android:id="@+id/tvCodigo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Código: 000000"
-        android:textSize="15sp"
-        android:textColor="#212121"
-        android:layout_marginBottom="4dp"/>
+        android:text="Código: "
+        android:textSize="14sp"
+        android:textColor="#424242" />
 
     <TextView
         android:id="@+id/tvCarrera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Carrera: Ingeniería"
-        android:textSize="15sp"
-        android:textColor="#424242"
-        android:layout_marginBottom="6dp"/>
+        android:text="Carrera: "
+        android:textSize="14sp"
+        android:textColor="#424242" />
 
     <TextView
-        android:id="@+id/tvFechaHora"
+        android:id="@+id/tvEntrada"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fecha y Hora: 01/09/2025 10:30"
-        android:textSize="13sp"
-        android:textColor="#757575"/>
+        android:text="Entrada: "
+        android:textSize="14sp"
+        android:textColor="#1B5E20"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tvSalida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Salida: ---"
+        android:textSize="14sp"
+        android:textColor="#B71C1C" />
 
 </LinearLayout>
+
 

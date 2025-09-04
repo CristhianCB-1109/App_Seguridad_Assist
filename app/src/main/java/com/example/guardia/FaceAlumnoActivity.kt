@@ -23,6 +23,8 @@ class FaceAlumnoActivity : ComponentActivity() {
     private lateinit var tvNombre: TextView
     private lateinit var tvCodigo: TextView
     private lateinit var tvCarrera: TextView
+    private lateinit var tvtelefono: TextView
+    private lateinit var tvdni: TextView
     private lateinit var imgFoto: ImageView
     private lateinit var btnCerrarSesion: Button
 
@@ -38,6 +40,8 @@ class FaceAlumnoActivity : ComponentActivity() {
         tvNombre = findViewById(R.id.tvNombreAlumno)
         tvCodigo = findViewById(R.id.tvCodigoAlumno)
         tvCarrera = findViewById(R.id.tvCarreraAlumno)
+        tvdni = findViewById(R.id.tvdniAlumno)
+        tvtelefono = findViewById(R.id.tvtelefonoAlumno)
         imgFoto = findViewById(R.id.imgFoto)
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion)
 
@@ -51,6 +55,8 @@ class FaceAlumnoActivity : ComponentActivity() {
             tvNombre.text = alumno.nombre
             tvCodigo.text = "Código: ${alumno.codigo_estudiante}"
             tvCarrera.text = "Carrera: ${alumno.carrera}"
+            tvdni.text = "DNI: ${alumno.dni}"
+            tvtelefono.text = "Telefono: ${alumno.telefono}"
 
             if (alumno.foto.isNotEmpty()) {
                 Glide.with(this@FaceAlumnoActivity).load(alumno.foto).into(imgFoto)

@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [RegistroInvitado::class ,RegistroAlumno::class], version = 1)
+@Database(entities = [RegistroInvitado::class, RegistroAlumno::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun registroAlumnoDao(): RegistroAlumnoDao
     abstract fun registroInvitadoDao(): RegistroInvitadoDao
+
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -20,12 +21,14 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "seguridad_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
-
 }
+
 

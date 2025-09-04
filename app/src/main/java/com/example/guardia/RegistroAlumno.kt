@@ -9,5 +9,6 @@ data class RegistroAlumno(
     val codigo: String,
     val nombre: String,
     val carrera: String,
-    val fechaHora: String
+    val fechaentrada: String,
+    val fechasalida: String? = null
 )

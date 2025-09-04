@@ -20,7 +20,9 @@ object AlumnoRepository {
             nombre = "Juan Pérez",
             carrera = "Ingeniería de Software",
             foto = "foto",
-            codigo_estudiante = "A2025001"
+            codigo_estudiante = "A2025001",
+            dni = "75894612",
+            telefono = "952010187"
         )
     }
 }

@@ -15,11 +15,12 @@ class SeguridadActivity : AppCompatActivity() {
 
         val nombre = intent.getStringExtra("nombre") ?: "Usuario Seguridad"
 
+        // titulo
         supportActionBar?.title = "Bienvenido, $nombre"
-
-        val toast = Toast.makeText(this, "Bienvenido $nombre", Toast.LENGTH_LONG)
-        toast.setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 200)
-        toast.show()
+        Toast.makeText(this, "Bienvenido $nombre", Toast.LENGTH_LONG).apply {
+            setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 200)
+            show()
+        }
 
         //Registrar Alumno
         val btnRegistrarAlumno = findViewById<Button>(R.id.btnRegistrarAlumno)
@@ -51,14 +52,13 @@ class SeguridadActivity : AppCompatActivity() {
             mostrarDialogoCerrarSesion()
         }
 
-        //Botón atras cerra sesion
+        //Botón atrás cerrar sesión
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 mostrarDialogoCerrarSesion()
             }
         })
     }
-
     // Función cerrar sesión
     private fun mostrarDialogoCerrarSesion() {
         AlertDialog.Builder(this)
@@ -71,4 +71,5 @@ class SeguridadActivity : AppCompatActivity() {
             .show()
     }
 }
+
 
