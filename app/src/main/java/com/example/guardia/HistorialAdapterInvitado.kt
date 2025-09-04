@@ -12,9 +12,9 @@ class HistorialAdapterInvitado(private val lista: List<RegistroInvitado>) :
     RecyclerView.Adapter<HistorialAdapterInvitado.HistorialViewHolder>() {
 
     class HistorialViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val RegistroFullName: TextView = itemView.findViewById(R.id.RegistroFullName)
-        val RegistroDni: TextView = itemView.findViewById(R.id.RegistroDni)
-        val RegistroNumero: TextView = itemView.findViewById(R.id.RegistroNumero)
+        val tvnombre: TextView = itemView.findViewById(R.id.tvnombre)
+        val tvdni: TextView = itemView.findViewById(R.id.tvdni)
+        val tvnumero: TextView = itemView.findViewById(R.id.tvnumero)
 
     }
 
@@ -26,9 +26,9 @@ class HistorialAdapterInvitado(private val lista: List<RegistroInvitado>) :
 
     override fun onBindViewHolder(holder: HistorialViewHolder, position: Int) {
         val registro = lista[position]
-        holder.RegistroFullName.text = registro.nombre
-        holder.RegistroDni.text = "Dni: ${registro.dni}"
-        holder.RegistroNumero.text = "Numero: ${registro.numero}"
+        holder.tvnombre.text = registro.nombre
+        holder.tvdni.text = "Dni: ${registro.dni}"
+        holder.tvnumero.text = "Numero: ${registro.numero}"
 
     }
 

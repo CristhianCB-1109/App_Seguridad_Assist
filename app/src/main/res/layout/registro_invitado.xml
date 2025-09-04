@@ -34,7 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="DNI"
-        android:inputType="textEmailAddress"
+        android:inputType="number"
+        android:maxLength="8"
         app:layout_constraintTop_toBottomOf="@+id/RegistroFullName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -46,6 +47,7 @@
         android:layout_marginTop="16dp"
         android:hint="Número"
         android:inputType="phone"
+        android:maxLength="9"
         app:layout_constraintTop_toBottomOf="@+id/RegistroDni"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
