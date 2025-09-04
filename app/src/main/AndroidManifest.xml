@@ -67,6 +67,9 @@
             android:label="registro invitado"
             android:theme="@style/Theme.Guardia"/>
 
+        <activity android:name=".HistorialInvitado"
+            android:label="historial invitado"
+            android:theme="@style/Theme.Guardia"/>
 
     </application>
 
