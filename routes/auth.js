@@ -80,12 +80,7 @@ router.post('/login', async (req, res) => {
     const payload = {
       user: {
         id: user.id_usuario,
-        rol: user.rol,
-        nombre: user.nombre,
-        dni: user.dni,
-        codigo_estudiante: user.codigo_estudiante,
-        carrera: user.carrera,
-        telefono: user.telefono
+        rol: user.rol
       },
     };
     jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
