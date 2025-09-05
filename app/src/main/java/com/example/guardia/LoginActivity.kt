@@ -229,6 +229,7 @@ suspend fun login(email: String, password: String): LoginResult {
     } catch (e: Exception) {
         // fallo usa mock
         mockLogin(email, password)
+
     }
 }
 suspend fun mockLogin(email: String, password: String): LoginResult {
@@ -242,6 +243,16 @@ suspend fun mockLogin(email: String, password: String): LoginResult {
             foto = "https://picsum.photos/200",
             telefono = "987654321",
             dni = "12345678"
+        )
+        "alumno2@ejemplo.com" -> LoginResult(
+            rol = "alumno",
+            id = "e111111",
+            nombre = "roberto",
+            codigoEstudiante = "e234234",
+            carrera = "Ingeniería de Software",
+            foto = "https://picsum.photos/200",
+            telefono = "924876666",
+            dni = "12323433"
         )
         "seguridad@ejemplo.com" -> LoginResult(
             rol = "seguridad",

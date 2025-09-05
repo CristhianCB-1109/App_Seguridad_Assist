@@ -8,21 +8,38 @@ object AlumnoRepository {
                 response.body()!!
             } else {
                 getMockAlumno(id)
+
             }
         } catch (e: Exception) {
             getMockAlumno(id)
+
         }
     }
 
     private fun getMockAlumno(id: String): AlumnoResponse {
-        return AlumnoResponse(
-            id = "A2025001",
-            nombre = "Juan Pérez",
-            carrera = "Ingeniería de Software",
-            foto = "foto",
-            codigo_estudiante = "A2025001",
-            dni = "75894612",
-            telefono = "952010187"
-        )
+        return when (id) {
+            "A2025001"-> AlumnoResponse(
+                id = "A2025001",
+                nombre = "Juan Pérez",
+                carrera = "Ingeniería de Software",
+                foto = "foto",
+                codigo_estudiante = "A2025001",
+                dni = "75894612",
+                telefono = "952010187"
+            )
+
+            "e111111"-> AlumnoResponse(
+                id = "e111111",
+                nombre = "roberto",
+                carrera = "Ingeniería de Software",
+                foto = "foto",
+                codigo_estudiante = "e234234",
+                dni = "12323433",
+                telefono = "924876666"
+            )
+
+            else -> throw IllegalArgumentException("Alumno no encontrado con ID: $id")
+        }
+
     }
 }

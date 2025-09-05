@@ -47,6 +47,7 @@ class FaceAlumnoActivity : ComponentActivity() {
 
         alumnoId = intent.getStringExtra("id") ?: "A2025001"
 
+
         // Cargar datos del alumno
         CoroutineScope(Dispatchers.Main).launch {
             val alumno = AlumnoRepository.getAlumno(alumnoId)
