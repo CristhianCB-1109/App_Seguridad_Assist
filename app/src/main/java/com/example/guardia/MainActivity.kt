@@ -96,7 +96,7 @@ fun MainScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
 
         // Créditos
         Text(
-            text = "App hecha por Julio, Gandy y Cristhian",
+            text = "App hecha por Julio, Gandy, Cristhian y Jorge",
             style = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp

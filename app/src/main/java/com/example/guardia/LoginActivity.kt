@@ -2,6 +2,7 @@ package com.example.guardia
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -107,7 +108,9 @@ fun LoginScreen() {
                             Toast.LENGTH_SHORT
                         ).show()
                         //Funcion en el rol
+                        Log.d("Login","Rol recibido: ${result.rol}")
                         when (result.rol) {
+
                             "alumno" -> {
                                 context.startActivity(
                                     Intent(context, FaceAlumnoActivity::class.java).apply {

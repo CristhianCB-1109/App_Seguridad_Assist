@@ -59,11 +59,7 @@ class FaceAlumnoActivity : ComponentActivity() {
             tvdni.text = "DNI: ${alumno.dni}"
             tvtelefono.text = "Telefono: ${alumno.telefono}"
 
-            if (alumno.foto.isNotEmpty()) {
-                Glide.with(this@FaceAlumnoActivity).load(alumno.foto).into(imgFoto)
-            } else {
-                imgFoto.setImageResource(R.drawable.ic_person)
-            }
+
 
             // Generar QR con todos los datos
             generarQR(alumno)

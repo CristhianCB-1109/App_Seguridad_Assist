@@ -22,7 +22,7 @@ data class AlumnoResponse(
     val id: String,
     val nombre: String,
     val carrera: String,
-    val foto: String,
+    val foto: String?,
     val codigo_estudiante: String,
     val dni: String,
     val telefono: String
