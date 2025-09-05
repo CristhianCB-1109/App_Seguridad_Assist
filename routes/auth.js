@@ -8,7 +8,7 @@ import 'dotenv/config';
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// 🔑 RUTA PARA REGISTRAR UN NUEVO USUARIO
+//  RUTA PARA REGISTRAR UN NUEVO USUARIO
 router.post('/register', async (req, res) => {
     console.log('Petición de registro recibida.');
     const { email, contrasena, rol, nombre, codigo_estudiante, carrera, dni, telefono, foto, clave_acceso } = req.body;
