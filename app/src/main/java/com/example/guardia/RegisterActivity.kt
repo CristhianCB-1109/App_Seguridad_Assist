@@ -129,10 +129,17 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
 
                     isLoading = true
                     coroutineScope.launch {
+                        // 🔑 ¡Corrección aquí! Pasando null para los nuevos parámetros opcionales
                         val errorMessage = registerUser(
                             correo = email,
                             contrasena = password,
-                            rol = "alumno"
+                            rol = "alumno",
+                            nombre = null,
+                            codigo_estudiante = null,
+                            carrera = null,
+                            dni = null,
+                            telefono = null,
+                            clave_acceso = null
                         )
                         isLoading = false
 
@@ -169,11 +176,17 @@ fun RegisterScreenPreview() {
     }
 }
 
-
+// 🔑 ¡Corrección aquí! La función ahora acepta todos los nuevos parámetros
 suspend fun registerUser(
     correo: String,
     contrasena: String,
-    rol: String
+    rol: String,
+    nombre: String?,
+    codigo_estudiante: String?,
+    carrera: String?,
+    dni: String?,
+    telefono: String?,
+    clave_acceso: String?
 ): String? {
     val retrofit = Retrofit.Builder()
         .baseUrl("https://j-c-g.apis-s.site/")
@@ -184,7 +197,17 @@ suspend fun registerUser(
 
     return try {
         val response = apiService.register(
-            RegisterRequest(email = correo, contrasena = contrasena, rol = rol)
+            RegisterRequest(
+                email = correo,
+                contrasena = contrasena,
+                rol = rol,
+                nombre = nombre,
+                codigo_estudiante = codigo_estudiante,
+                carrera = carrera,
+                dni = dni,
+                telefono = telefono,
+                clave_acceso = clave_acceso
+            )
         )
         if (response.isSuccessful && response.body()?.success == true) {
             null

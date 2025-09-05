@@ -23,6 +23,7 @@ import com.example.guardia.LoginResponse
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import androidx.compose.material3.MaterialTheme
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +43,7 @@ class LoginActivity : ComponentActivity() {
 fun LoginScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var accessCode by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -80,18 +82,29 @@ fun LoginScreen() {
             singleLine = true
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = accessCode,
+            onValueChange = { accessCode = it },
+            label = { Text("Clave de Acceso (Solo Seguridad)") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true
+        )
+
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = {
-                if (email.isBlank() || password.isBlank()) {
-                    Toast.makeText(context, "El correo y la contraseña no pueden estar vacíos", Toast.LENGTH_LONG).show()
+                if (email.isBlank() && accessCode.isBlank()) {
+                    Toast.makeText(context, "Ingresa un correo y contraseña, o una clave de acceso", Toast.LENGTH_LONG).show()
                     return@Button
                 }
 
                 isLoading = true
                 coroutineScope.launch {
-                    val result = login(email, password)
+                    val result = login(email, password, accessCode)
                     isLoading = false
 
                     if (result.errorMessage != null) {
@@ -106,27 +119,28 @@ fun LoginScreen() {
                             "Inicio de sesión exitoso",
                             Toast.LENGTH_SHORT
                         ).show()
-                        //Funcion en el rol
                         when (result.rol) {
                             "alumno" -> {
                                 context.startActivity(
                                     Intent(context, FaceAlumnoActivity::class.java).apply {
-                                        putExtra("id", result.id)
-                                        putExtra("nombre", result.nombre)
-                                        putExtra("carrera", result.carrera)
-                                        putExtra("fotoUrl", result.foto)
-                                        putExtra("telefono", result.telefono)
-                                        putExtra("dni", result.dni)
+                                        putExtra("id", result.id ?: "")
+                                        putExtra("nombre", result.nombre ?: "")
+                                        putExtra("carrera", result.carrera ?: "")
+                                        putExtra("fotoUrl", result.foto ?: "")
+                                        putExtra("telefono", result.telefono ?: "")
+                                        putExtra("dni", result.dni ?: "")
+                                        putExtra("isMockData", result.isMockData)
                                     }
                                 )
                             }
                             "seguridad" -> {
                                 context.startActivity(
                                     Intent(context, SeguridadActivity::class.java).apply {
-                                        putExtra("id", result.id)
-                                        putExtra("nombre", result.nombre)
-                                        putExtra("dni", result.dni)
-                                        putExtra("fotoUrl", result.foto)
+                                        putExtra("id", result.id ?: "")
+                                        putExtra("nombre", result.nombre ?: "")
+                                        putExtra("dni", result.dni ?: "")
+                                        putExtra("fotoUrl", result.foto ?: "")
+                                        putExtra("isMockData", result.isMockData)
                                     }
                                 )
                             }
@@ -139,22 +153,6 @@ fun LoginScreen() {
                     }
                 }
             },
-                    /* datos con api (Gandy)
-                    val errorMessage = loginUser(
-                        email = email,
-                        contrasena = password
-                    )
-                    isLoading = false
-
-                    if (errorMessage == null) {
-                        Toast.makeText(context, "Inicio de sesion exitoso", Toast.LENGTH_SHORT).show()
-                        // Redirigir a la nueva actividad
-                        context.startActivity(Intent(context, GestionActivity::class.java))
-                    } else {
-                        Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_LONG).show()
-                    }
-                }
-            },*/
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading,
             contentPadding = PaddingValues(vertical = 16.dp)
@@ -173,7 +171,7 @@ fun LoginScreen() {
         TextButton(onClick = {
             context.startActivity(Intent(context, RegisterActivity::class.java))
         }) {
-            Text(" Regístrate aquí")
+            Text("Regístrate aquí")
         }
     }
 }
@@ -185,6 +183,14 @@ fun LoginScreenPreview() {
         LoginScreen()
     }
 }
+
+// 🔑 CAMBIO 1: Hacemos los campos opcionales para evitar errores de null
+data class LoginRequest(
+    val email: String?,
+    val contrasena: String?,
+    val clave_acceso: String?
+)
+
 data class LoginResult(
     val errorMessage: String? = null,
     val rol: String? = null,
@@ -194,26 +200,32 @@ data class LoginResult(
     val carrera: String? = null,
     val foto: String? = null,
     val telefono: String? = null,
-    val dni: String? = null
+    val dni: String? = null,
+    val isMockData: Boolean = false
 )
 
-//Login con API
-suspend fun login(email: String, password: String): LoginResult {
+// Login con API y Mock
+suspend fun login(email: String, password: String, accessCode: String): LoginResult {
     return try {
-        // Intentar API
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://j-c-g.apis-s.site/") // 🔑 tu API
+            .baseUrl("https://j-c-g.apis-s.site/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val apiService = retrofit.create(ApiService::class.java)
-        val response = apiService.login(LoginRequest(email, password))
+
+        val requestBody = if (accessCode.isNotBlank()) {
+            LoginRequest(null, null, accessCode)
+        } else {
+            LoginRequest(email, password, null)
+        }
+
+        val response = apiService.login(requestBody)
 
         if (response.isSuccessful && response.body()?.success == true) {
             val data = response.body()!!
 
-            //datos de la API
-            LoginResult(
+            return LoginResult(
                 rol = data.rol,
                 id = data.id,
                 nombre = data.nombre,
@@ -221,20 +233,28 @@ suspend fun login(email: String, password: String): LoginResult {
                 carrera = data.carrera,
                 foto = data.foto,
                 telefono = data.telefono,
-                dni = data.dni
+                dni = data.dni,
+                isMockData = false
             )
         } else {
             LoginResult(errorMessage = response.body()?.message ?: "Credenciales incorrectas")
         }
     } catch (e: Exception) {
-        // fallo usa mock
-        mockLogin(email, password)
-
+        return mockLogin(email, password, accessCode)
     }
 }
-suspend fun mockLogin(email: String, password: String): LoginResult {
-    return when (email.lowercase()) {
-        "alumno@ejemplo.com" -> LoginResult(
+
+suspend fun mockLogin(email: String, password: String, accessCode: String): LoginResult {
+    return when {
+        accessCode == "9988" -> LoginResult(
+            rol = "seguridad",
+            id = "S2025001",
+            nombre = "Carlos Seguridad",
+            dni = "87654321",
+            foto = "https://picsum.photos/201",
+            isMockData = true
+        )
+        email.lowercase() == "alumno@ejemplo.com" -> LoginResult(
             rol = "alumno",
             id = "A2025001",
             nombre = "Juan Pérez",
@@ -242,9 +262,10 @@ suspend fun mockLogin(email: String, password: String): LoginResult {
             carrera = "Ingeniería de Software",
             foto = "https://picsum.photos/200",
             telefono = "987654321",
-            dni = "12345678"
+            dni = "12345678",
+            isMockData = true
         )
-        "alumno2@ejemplo.com" -> LoginResult(
+        email.lowercase() == "alumno2@ejemplo.com" -> LoginResult(
             rol = "alumno",
             id = "e111111",
             nombre = "roberto",
@@ -252,14 +273,16 @@ suspend fun mockLogin(email: String, password: String): LoginResult {
             carrera = "Ingeniería de Software",
             foto = "https://picsum.photos/200",
             telefono = "924876666",
-            dni = "12323433"
+            dni = "12323433",
+            isMockData = true
         )
-        "seguridad@ejemplo.com" -> LoginResult(
+        email.lowercase() == "seguridad@ejemplo.com" -> LoginResult(
             rol = "seguridad",
             id = "S2025001",
             nombre = "Carlos Ramírez",
             dni = "87654321",
-            foto = "https://picsum.photos/201"
+            foto = "https://picsum.photos/201",
+            isMockData = true
         )
         else -> LoginResult(errorMessage = "Usuario o contraseña incorrectos")
     }

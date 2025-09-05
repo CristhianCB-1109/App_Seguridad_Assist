@@ -11,11 +11,9 @@ import androidx.activity.ComponentActivity
 import com.bumptech.glide.Glide
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.*
+import androidx.annotation.ColorInt
 
 class FaceAlumnoActivity : ComponentActivity() {
 
@@ -27,11 +25,11 @@ class FaceAlumnoActivity : ComponentActivity() {
     private lateinit var tvdni: TextView
     private lateinit var imgFoto: ImageView
     private lateinit var btnCerrarSesion: Button
+    private lateinit var tvEstadoConexion: TextView
 
     private val handler = Handler(Looper.getMainLooper())
     private val qrRefreshInterval = 40_000L // 40 segundos
 
-    private lateinit var alumnoId: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_facealumno)
@@ -44,38 +42,52 @@ class FaceAlumnoActivity : ComponentActivity() {
         tvtelefono = findViewById(R.id.tvtelefonoAlumno)
         imgFoto = findViewById(R.id.imgFoto)
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion)
+        tvEstadoConexion = findViewById(R.id.tvEstadoConexion)
 
-        alumnoId = intent.getStringExtra("id") ?: "A2025001"
+        // Obtener los datos directamente del Intent
+        val id = intent.getStringExtra("id") ?: ""
+        val nombre = intent.getStringExtra("nombre") ?: ""
+        val codigoEstudiante = intent.getStringExtra("codigo_estudiante") ?: ""
+        val carrera = intent.getStringExtra("carrera") ?: ""
+        val fotoUrl = intent.getStringExtra("fotoUrl") ?: ""
+        val telefono = intent.getStringExtra("telefono") ?: ""
+        val dni = intent.getStringExtra("dni") ?: ""
+        val isMockData = intent.getBooleanExtra("isMockData", false)
 
+        // Usar los datos del Intent para actualizar la UI
+        tvNombre.text = nombre
+        tvCodigo.text = "Código: $codigoEstudiante"
+        tvCarrera.text = "Carrera: $carrera"
+        tvdni.text = "DNI: $dni"
+        tvtelefono.text = "Teléfono: $telefono"
 
-        // Cargar datos del alumno
-        CoroutineScope(Dispatchers.Main).launch {
-            val alumno = AlumnoRepository.getAlumno(alumnoId)
-
-            // Mostrar datos
-            tvNombre.text = alumno.nombre
-            tvCodigo.text = "Código: ${alumno.codigo_estudiante}"
-            tvCarrera.text = "Carrera: ${alumno.carrera}"
-            tvdni.text = "DNI: ${alumno.dni}"
-            tvtelefono.text = "Telefono: ${alumno.telefono}"
-
-            if (alumno.foto.isNotEmpty()) {
-                Glide.with(this@FaceAlumnoActivity).load(alumno.foto).into(imgFoto)
-            } else {
-                imgFoto.setImageResource(R.drawable.ic_person)
-            }
-
-            // Generar QR con todos los datos
-            generarQR(alumno)
-            startAutoRefreshQR(alumno)
+        // Cargar la foto
+        if (fotoUrl.isNotEmpty()) {
+            Glide.with(this).load(fotoUrl).into(imgFoto)
+        } else {
+            imgFoto.setImageResource(R.drawable.ic_person)
         }
+
+        // Mostrar el estado de la conexión
+        if (isMockData) {
+            tvEstadoConexion.text = "¡Sin conexión! Se muestran datos de prueba"
+            tvEstadoConexion.setBackgroundColor(resources.getColor(R.color.red_500, null))
+        } else {
+            tvEstadoConexion.text = "Conexión exitosa. Datos del servidor"
+            tvEstadoConexion.setBackgroundColor(resources.getColor(R.color.green_500, null))
+        }
+
+        // Generar QR y programar la actualización automática
+        val alumnoData = AlumnoResponse(id, nombre, carrera, fotoUrl, codigoEstudiante, dni, telefono)
+        generarQR(alumnoData)
+        startAutoRefreshQR(alumnoData)
 
         btnCerrarSesion.setOnClickListener {
             GestionActivity.cerrarSesion(this)
         }
     }
 
-    // Funcion Generar QR
+    // El resto de las funciones (generarQR, startAutoRefreshQR, onDestroy) quedan iguales
     private fun generarQR(alumno: AlumnoResponse) {
         try {
             val timestamp = System.currentTimeMillis() / 1000
