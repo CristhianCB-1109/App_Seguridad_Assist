@@ -1,4 +1,4 @@
-package com.example.guardia
+package com.example.guardia.ui.Historial
 
 import android.os.Bundle
 import android.view.View
@@ -6,6 +6,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guardia.Data.Local.AppDatabase
+import com.example.guardia.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

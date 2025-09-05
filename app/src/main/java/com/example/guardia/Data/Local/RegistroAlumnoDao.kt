@@ -1,8 +1,9 @@
-package com.example.guardia
+package com.example.guardia.Data.Local
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.guardia.Data.Local.entities.RegistroAlumno
 
 @Dao
 interface RegistroAlumnoDao {

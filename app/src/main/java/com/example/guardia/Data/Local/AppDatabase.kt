@@ -1,9 +1,11 @@
-package com.example.guardia
+package com.example.guardia.Data.Local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.guardia.Data.Local.entities.RegistroAlumno
+import com.example.guardia.Data.Local.entities.RegistroInvitado
 
 @Database(entities = [RegistroInvitado::class, RegistroAlumno::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
@@ -30,5 +32,3 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
-
-

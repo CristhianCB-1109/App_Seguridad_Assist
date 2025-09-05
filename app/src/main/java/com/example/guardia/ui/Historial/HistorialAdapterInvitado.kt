@@ -1,12 +1,12 @@
-package com.example.guardia
+package com.example.guardia.ui.Historial
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.guardia.Data.Local.entities.RegistroInvitado
+import com.example.guardia.R
 
 class HistorialAdapterInvitado(private val lista: List<RegistroInvitado>) :
     RecyclerView.Adapter<HistorialAdapterInvitado.HistorialViewHolder>() {

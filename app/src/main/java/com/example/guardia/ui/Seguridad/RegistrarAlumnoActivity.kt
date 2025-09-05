@@ -1,6 +1,7 @@
-package com.example.guardia
+package com.example.guardia.ui.Seguridad
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.*
@@ -8,6 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.example.guardia.Data.Local.AppDatabase
+import com.example.guardia.Data.Local.entities.RegistroAlumno
+import com.example.guardia.R
+import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
@@ -15,6 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 
 class RegistrarAlumnoActivity : AppCompatActivity() {
@@ -80,7 +87,7 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
                     }
                 }
             }
-            override fun possibleResultPoints(resultPoints: MutableList<com.google.zxing.ResultPoint>?) {}
+            override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) {}
         })
     }
 
@@ -109,7 +116,7 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
             ivFoto.setImageResource(R.drawable.ic_person)
         }
 
-        val dialog = android.app.AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setCancelable(false)
             .create()
@@ -147,7 +154,7 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
         val dao = AppDatabase.getDatabase(this).registroAlumnoDao()
         CoroutineScope(Dispatchers.IO).launch {
             val ultimoRegistro = dao.obtenerUltimoRegistro(alumno.codigo)
-            val horaActual = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
+            val horaActual = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
 
             if (ultimoRegistro != null && ultimoRegistro.fechasalida == null) {
                 // Registrar salida

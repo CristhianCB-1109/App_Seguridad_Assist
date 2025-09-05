@@ -1,9 +1,7 @@
-package com.example.guardia
+package com.example.guardia.ui.Register
 
-import android.os.Bundle
+import android.util.Patterns
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,38 +15,34 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.guardia.ui.theme.GuardiaTheme
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
-class RegisterActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            GuardiaTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    RegisterScreen(onNavigateBack = { finish() })
-                }
-            }
-        }
-    }
-}
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.guardia.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(onNavigateBack: () -> Unit) {
+fun RegisterScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: RegisterViewModel = viewModel()
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    val registerState by viewModel.registerState.collectAsState()
+
+    LaunchedEffect(registerState) {
+        registerState?.let { result ->
+            isLoading = false
+            if (result.success) {
+                Toast.makeText(context, "Registro exitoso", Toast.LENGTH_LONG).show()
+                onNavigateBack()
+            } else {
+                Toast.makeText(context, "Error: ${result.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -118,7 +112,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                         Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_LONG).show()
                         return@Button
                     }
-                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                         Toast.makeText(context, "Formato de correo inválido", Toast.LENGTH_LONG).show()
                         return@Button
                     }
@@ -128,21 +122,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                     }
 
                     isLoading = true
-                    coroutineScope.launch {
-                        val errorMessage = registerUser(
-                            correo = email,
-                            contrasena = password,
-                            rol = "alumno"
-                        )
-                        isLoading = false
-
-                        if (errorMessage == null) {
-                            Toast.makeText(context, "Registro exitoso", Toast.LENGTH_LONG).show()
-                            onNavigateBack()
-                        } else {
-                            Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_LONG).show()
-                        }
-                    }
+                    viewModel.register(email, password)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
@@ -158,40 +138,5 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Vista previa de registro")
-@Composable
-fun RegisterScreenPreview() {
-    GuardiaTheme {
-        RegisterScreen(onNavigateBack = {})
-    }
-}
-
-
-suspend fun registerUser(
-    correo: String,
-    contrasena: String,
-    rol: String
-): String? {
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://j-c-g.apis-s.site/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiService = retrofit.create(ApiService::class.java)
-
-    return try {
-        val response = apiService.register(
-            RegisterRequest(email = correo, contrasena = contrasena, rol = rol)
-        )
-        if (response.isSuccessful && response.body()?.success == true) {
-            null
-        } else {
-            response.body()?.message ?: "Error al registrarse"
-        }
-    } catch (e: Exception) {
-        "Error de red: ${e.message}"
     }
 }

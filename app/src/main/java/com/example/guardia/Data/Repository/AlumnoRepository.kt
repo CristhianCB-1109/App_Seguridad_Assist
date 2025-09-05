@@ -1,4 +1,7 @@
-package com.example.guardia
+package com.example.guardia.Data.Repository
+
+import com.example.guardia.Data.Remote.AlumnoResponse
+import com.example.guardia.Data.Remote.ClienteRetrofit
 
 object AlumnoRepository {
     suspend fun getAlumno(id: String): AlumnoResponse {

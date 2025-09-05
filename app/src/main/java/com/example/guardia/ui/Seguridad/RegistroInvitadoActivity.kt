@@ -1,4 +1,4 @@
-package com.example.guardia
+package com.example.guardia.ui.Seguridad
 
 import android.os.Bundle
 import android.widget.Button
@@ -6,6 +6,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.guardia.Data.Local.AppDatabase
+import com.example.guardia.Data.Local.entities.RegistroInvitado
+import com.example.guardia.R
 import kotlinx.coroutines.launch
 
 class RegistroInvitadoActivity : AppCompatActivity() {
@@ -24,7 +27,7 @@ class RegistroInvitadoActivity : AppCompatActivity() {
         etNumero = findViewById(R.id.RegistroNumero)
         btnGuardar = findViewById(R.id.RegistroInvitado)
 
-        val db = AppDatabase.getDatabase(this)
+        val db = AppDatabase.Companion.getDatabase(this)
         val dao = db.registroInvitadoDao()
 
         btnGuardar.setOnClickListener {

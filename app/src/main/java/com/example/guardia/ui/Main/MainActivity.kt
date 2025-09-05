@@ -1,4 +1,4 @@
-package com.example.guardia
+package com.example.guardia.ui.Main
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.guardia.ui.app.Login.LoginActivity
+import com.example.guardia.ui.Register.RegisterActivity
 import com.example.guardia.ui.theme.GuardiaTheme
 
 class MainActivity : ComponentActivity() {

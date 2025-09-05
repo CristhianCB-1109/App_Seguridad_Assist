@@ -1,4 +1,4 @@
-package com.example.guardia
+package com.example.guardia.Data.Local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

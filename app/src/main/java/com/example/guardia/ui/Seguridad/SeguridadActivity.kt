@@ -1,12 +1,18 @@
-package com.example.guardia
+package com.example.guardia.ui.Seguridad
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.activity.OnBackPressedCallback
+import com.example.guardia.ui.Gestion.GestionActivity
+import com.example.guardia.ui.Historial.HistorialActivity
+import com.example.guardia.ui.Historial.HistorialInvitado
+import com.example.guardia.R
+import com.example.guardia.ui.Seguridad.RegistroInvitadoActivity
 
 class SeguridadActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +24,7 @@ class SeguridadActivity : AppCompatActivity() {
         // titulo
         supportActionBar?.title = "Bienvenido, $nombre"
         Toast.makeText(this, "Bienvenido $nombre", Toast.LENGTH_LONG).apply {
-            setGravity(android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL, 0, 200)
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 200)
             show()
         }
 
@@ -65,11 +71,9 @@ class SeguridadActivity : AppCompatActivity() {
             .setTitle("Cerrar sesión")
             .setMessage("¿Seguro que deseas cerrar sesión?")
             .setPositiveButton("Sí") { _, _ ->
-                GestionActivity.cerrarSesion(this)
+                GestionActivity.Companion.cerrarSesion(this)
             }
             .setNegativeButton("No", null)
             .show()
     }
 }
-
-

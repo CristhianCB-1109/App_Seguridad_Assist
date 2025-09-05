@@ -1,4 +1,4 @@
-package com.example.guardia
+package com.example.guardia.Data.Remote
 
 import retrofit2.http.Body
 import retrofit2.http.POST
