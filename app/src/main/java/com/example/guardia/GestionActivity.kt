@@ -35,7 +35,7 @@ class GestionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val alumnoId = "A2025001"
-        val alumnoNombre = "Juan Pérez"
+        val alumnoNombre = "Pepito "
         val alumnoCarrera = "Ingeniería de Software"
         val alumnoFotoUrl = "https://tu-api.com/fotos/juan.png"
 

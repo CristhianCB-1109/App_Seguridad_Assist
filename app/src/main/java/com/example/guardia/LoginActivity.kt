@@ -240,7 +240,7 @@ suspend fun mockLogin(email: String, password: String): LoginResult {
         "alumno@ejemplo.com" -> LoginResult(
             rol = "alumno",
             id = "A2025001",
-            nombre = "Juan Pérez",
+            nombre = "Pepito",
             codigoEstudiante = "A2025001",
             carrera = "Ingeniería de Software",
             foto = "https://picsum.photos/200",

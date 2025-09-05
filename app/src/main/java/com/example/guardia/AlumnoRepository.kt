@@ -20,7 +20,7 @@ object AlumnoRepository {
         return when (id) {
             "A2025001"-> AlumnoResponse(
                 id = "A2025001",
-                nombre = "Juan Pérez",
+                nombre = "Pepito",
                 carrera = "Ingeniería de Software",
                 foto = "foto",
                 codigo_estudiante = "A2025001",
