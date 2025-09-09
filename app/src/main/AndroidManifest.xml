@@ -54,20 +54,20 @@
             android:theme="@style/Theme.Guardia" />
 
         <activity
-            android:name=".ui.Seguridad.RegistrarAlumnoActivity"
+            android:name=".ui.Seguridad.RegistroAlumno.RegistrarAlumnoActivity"
             android:label="Registrar Alumno"
             android:theme="@style/Theme.Guardia" />
 
         <activity
-            android:name=".ui.Historial.HistorialActivity"
+            android:name=".ui.Historial.Hist_alumno.HistorialActivity"
             android:label="Historial"
             android:theme="@style/Theme.Guardia" />
 
-        <activity android:name=".ui.Seguridad.RegistroInvitadoActivity"
+        <activity android:name=".ui.Seguridad.RegistroInvitado.RegistroInvitadoActivity"
             android:label="registro invitado"
             android:theme="@style/Theme.Guardia"/>
 
-        <activity android:name=".ui.Historial.HistorialInvitado"
+        <activity android:name=".ui.Historial.Hist_invitado.HistorialInvitado"
             android:label="historial invitado"
             android:theme="@style/Theme.Guardia"/>
 

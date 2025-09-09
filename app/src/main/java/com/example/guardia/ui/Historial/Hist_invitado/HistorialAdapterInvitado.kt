@@ -1,4 +1,4 @@
-package com.example.guardia.ui.Historial
+package com.example.guardia.ui.Historial.Hist_invitado
 
 import android.view.LayoutInflater
 import android.view.View

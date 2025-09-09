@@ -18,8 +18,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.guardia.ui.Alumno.FaceAlumnoActivity
 import com.example.guardia.ui.Gestion.GestionActivity
-import com.example.guardia.ui.Register.RegisterActivity
 import com.example.guardia.ui.Seguridad.SeguridadActivity
+import com.example.guardia.ui.Register.RegisterActivity
 import com.example.guardia.ui.theme.GuardiaTheme
 
 class LoginActivity : ComponentActivity() {
@@ -102,7 +102,6 @@ fun LoginScreen(viewModel: LoginViewModel) {
         }
     }
 
-    // 🔥 Reacciones a cambios en el estado
     LaunchedEffect(uiState) {
         uiState?.let { result ->
             if (result.errorMessage != null) {

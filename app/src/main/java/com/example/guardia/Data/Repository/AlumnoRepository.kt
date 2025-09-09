@@ -20,7 +20,7 @@ object AlumnoRepository {
     private fun getMockAlumno(id: String): AlumnoResponse {
         return AlumnoResponse(
             id = "A2025001",
-            nombre = "Juan Pérez",
+            nombre = "Pepito",
             carrera = "Ingeniería de Software",
             foto = "foto",
             codigo_estudiante = "A2025001",

@@ -9,10 +9,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.guardia.ui.Gestion.GestionActivity
-import com.example.guardia.ui.Historial.HistorialActivity
-import com.example.guardia.ui.Historial.HistorialInvitado
+import com.example.guardia.ui.Historial.Hist_alumno.HistorialActivity
+import com.example.guardia.ui.Historial.Hist_invitado.HistorialInvitado
 import com.example.guardia.R
-import com.example.guardia.ui.Seguridad.RegistroInvitadoActivity
+import com.example.guardia.ui.Seguridad.RegistroAlumno.RegistrarAlumnoActivity
+import com.example.guardia.ui.Seguridad.RegistroInvitado.RegistroInvitadoActivity
 
 class SeguridadActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

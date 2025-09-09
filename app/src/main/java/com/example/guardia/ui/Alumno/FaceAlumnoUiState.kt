@@ -10,6 +10,6 @@ data class FaceAlumnoUiState(
     val telefono: String = "",
     val foto: String = "",
     val qrBitmap: Bitmap? = null,
-    val isLoading: Boolean = true,   // 👈 Aquí ya existe
+    val isLoading: Boolean = true,
     val error: String? = null
 )
