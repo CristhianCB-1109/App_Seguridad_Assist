@@ -8,19 +8,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.example.guardia.api.ApiClient
+import com.example.guardia.api.ApiService
+import com.example.guardia.api.ApiResponse
+import com.example.guardia.api.RegistroAlumnoRequest
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import retrofit2.HttpException
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 class RegistrarAlumnoActivity : AppCompatActivity() {
 
     private lateinit var qrScannerView: DecoratedBarcodeView
     private val CAMERA_PERMISSION_CODE = 100
+    private lateinit var apiService: ApiService
 
     // Evitar duplicados de QR consecutivos
     private val qrEscaneadosRecientemente = ConcurrentHashMap<String, Long>()
@@ -31,11 +39,10 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registrar_alumno)
 
         qrScannerView = findViewById(R.id.qrScanner)
+        apiService = ApiClient.apiService
 
         // Verificar permiso de cámara
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             iniciarEscaner()
         } else {
             ActivityCompat.requestPermissions(
@@ -114,53 +121,80 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
             .setCancelable(false)
             .create()
 
-        // Verificar si es entrada o salida
-        val dao = AppDatabase.getDatabase(this).registroAlumnoDao()
+        // Llamamos a la API para verificar el estado actual del alumno (entrada/salida)
         CoroutineScope(Dispatchers.IO).launch {
-            val ultimoRegistro = dao.obtenerUltimoRegistro(alumno.codigo)
+            try {
+                // Endpoint para verificar si el alumno está dentro
+                val response = apiService.obtenerUltimoRegistro(alumno.codigo)
 
-            runOnUiThread {
-                if (ultimoRegistro != null && ultimoRegistro.fechasalida == null) {
-                    btnRegistrar.text = "Marcar salida"
-                } else {
-                    btnRegistrar.text = "Marcar entrada"
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body() != null) {
+                        // El alumno ya tiene un registro de entrada sin salida
+                        btnRegistrar.text = "Marcar salida"
+                    } else {
+                        // El alumno no está registrado o ya salió
+                        btnRegistrar.text = "Marcar entrada"
+                    }
+
+                    btnRegistrar.setOnClickListener {
+                        guardarRegistro(alumno)
+                        dialog.dismiss()
+                        qrScannerView.resume()
+                    }
                 }
-
-                btnRegistrar.setOnClickListener {
-                    guardarRegistro(alumno)
-                    Toast.makeText(this@RegistrarAlumnoActivity, "Registro guardado", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
-                    qrScannerView.resume()
-                }
-
-                btnCancelar.setOnClickListener {
-                    Toast.makeText(this@RegistrarAlumnoActivity, "No registrado", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
-                    qrScannerView.resume()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@RegistrarAlumnoActivity, "Error al verificar estado: ${e.message}", Toast.LENGTH_LONG).show()
+                    btnRegistrar.text = "Marcar entrada" // Por defecto, si hay un error
+                    btnRegistrar.setOnClickListener {
+                        guardarRegistro(alumno)
+                        dialog.dismiss()
+                        qrScannerView.resume()
+                    }
                 }
             }
+        }
+
+        btnCancelar.setOnClickListener {
+            Toast.makeText(this@RegistrarAlumnoActivity, "No registrado", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+            qrScannerView.resume()
         }
         dialog.show()
     }
 
     private fun guardarRegistro(alumno: Alumno) {
-        val dao = AppDatabase.getDatabase(this).registroAlumnoDao()
         CoroutineScope(Dispatchers.IO).launch {
-            val ultimoRegistro = dao.obtenerUltimoRegistro(alumno.codigo)
-            val horaActual = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
-
-            if (ultimoRegistro != null && ultimoRegistro.fechasalida == null) {
-                // Registrar salida
-                dao.registrarSalida(ultimoRegistro.id, horaActual)
-            } else {
-                // Registrar nueva entrada
-                val registro = RegistroAlumno(
-                    codigo = alumno.codigo,
+            try {
+                val registroRequest = RegistroAlumnoRequest(
+                    id_usuario = alumno.id,
                     nombre = alumno.nombre,
-                    carrera = alumno.carrera,
-                    fechaentrada = horaActual
+                    dni_o_codigo = alumno.codigo,
+                    carrera = alumno.carrera
                 )
-                dao.insertarRegistro(registro)
+
+                val response = apiService.registrarAlumno(registroRequest)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(this@RegistrarAlumnoActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
+                    } else {
+                        val errorMessage = response.body()?.message ?: "Error desconocido"
+                        Toast.makeText(this@RegistrarAlumnoActivity, "Error en el registro: $errorMessage", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@RegistrarAlumnoActivity, "Error de red: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: HttpException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@RegistrarAlumnoActivity, "Error del servidor: ${e.code()}", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@RegistrarAlumnoActivity, "Ocurrió un error inesperado: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -187,16 +221,3 @@ class RegistrarAlumnoActivity : AppCompatActivity() {
         qrScannerView.pause()
     }
 }
-
-data class Alumno(
-    val id: String,
-    val nombre: String,
-    val carrera: String,
-    val codigo: String,
-    val foto: String
-)
-
-
-
-
-

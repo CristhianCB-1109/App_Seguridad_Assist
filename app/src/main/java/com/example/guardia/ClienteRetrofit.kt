@@ -1,10 +1,12 @@
 package com.example.guardia
 
+import com.example.guardia.api.ApiService // Importación de la clase ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ClienteRetrofit {
     private const val BASE_URL = "https://j-c-g.apis-s.site/"
+
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -16,5 +18,3 @@ object ClienteRetrofit {
         retrofit.create(ApiService::class.java)
     }
 }
-
-

@@ -4,16 +4,16 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Button
 import androidx.activity.ComponentActivity
 import com.bumptech.glide.Glide
+import com.example.guardia.api.AlumnoResponse // Importación de la clase necesaria
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import org.json.JSONObject
 import java.util.*
-import androidx.annotation.ColorInt
 
 class FaceAlumnoActivity : ComponentActivity() {
 
@@ -28,12 +28,13 @@ class FaceAlumnoActivity : ComponentActivity() {
     private lateinit var tvEstadoConexion: TextView
 
     private val handler = Handler(Looper.getMainLooper())
-    private val qrRefreshInterval = 40_000L // 40 segundos
+    private val qrRefreshInterval = 40_000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_facealumno)
 
+        // Inicialización de vistas
         qrImage = findViewById(R.id.qrImagen)
         tvNombre = findViewById(R.id.tvNombreAlumno)
         tvCodigo = findViewById(R.id.tvCodigoAlumno)
@@ -42,9 +43,9 @@ class FaceAlumnoActivity : ComponentActivity() {
         tvtelefono = findViewById(R.id.tvtelefonoAlumno)
         imgFoto = findViewById(R.id.imgFoto)
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion)
-        tvEstadoConexion = findViewById(R.id.tvEstadoConexion)
+        tvEstadoConexion = findViewById(R.id.tvEstadoConexion) // Asegúrate de que esta línea esté presente
 
-        // Obtener los datos directamente del Intent
+        // Obtener datos del Intent y usarlos para la UI
         val id = intent.getStringExtra("id") ?: ""
         val nombre = intent.getStringExtra("nombre") ?: ""
         val codigoEstudiante = intent.getStringExtra("codigo_estudiante") ?: ""
@@ -52,32 +53,19 @@ class FaceAlumnoActivity : ComponentActivity() {
         val fotoUrl = intent.getStringExtra("fotoUrl") ?: ""
         val telefono = intent.getStringExtra("telefono") ?: ""
         val dni = intent.getStringExtra("dni") ?: ""
-        val isMockData = intent.getBooleanExtra("isMockData", false)
 
-        // Usar los datos del Intent para actualizar la UI
         tvNombre.text = nombre
         tvCodigo.text = "Código: $codigoEstudiante"
         tvCarrera.text = "Carrera: $carrera"
         tvdni.text = "DNI: $dni"
         tvtelefono.text = "Teléfono: $telefono"
 
-        // Cargar la foto
         if (fotoUrl.isNotEmpty()) {
             Glide.with(this).load(fotoUrl).into(imgFoto)
         } else {
             imgFoto.setImageResource(R.drawable.ic_person)
         }
 
-        // Mostrar el estado de la conexión
-        if (isMockData) {
-            tvEstadoConexion.text = "¡Sin conexión! Se muestran datos de prueba"
-            tvEstadoConexion.setBackgroundColor(resources.getColor(R.color.red_500, null))
-        } else {
-            tvEstadoConexion.text = "Conexión exitosa. Datos del servidor"
-            tvEstadoConexion.setBackgroundColor(resources.getColor(R.color.green_500, null))
-        }
-
-        // Generar QR y programar la actualización automática
         val alumnoData = AlumnoResponse(id, nombre, carrera, fotoUrl, codigoEstudiante, dni, telefono)
         generarQR(alumnoData)
         startAutoRefreshQR(alumnoData)
@@ -87,7 +75,6 @@ class FaceAlumnoActivity : ComponentActivity() {
         }
     }
 
-    // El resto de las funciones (generarQR, startAutoRefreshQR, onDestroy) quedan iguales
     private fun generarQR(alumno: AlumnoResponse) {
         try {
             val timestamp = System.currentTimeMillis() / 1000
@@ -104,12 +91,7 @@ class FaceAlumnoActivity : ComponentActivity() {
             }.toString()
 
             val barcodeEncoder = BarcodeEncoder()
-            val bitmap: Bitmap = barcodeEncoder.encodeBitmap(
-                qrData,
-                BarcodeFormat.QR_CODE,
-                500,
-                500
-            )
+            val bitmap: Bitmap = barcodeEncoder.encodeBitmap(qrData, BarcodeFormat.QR_CODE, 500, 500)
             qrImage.setImageBitmap(bitmap)
         } catch (e: Exception) {
             e.printStackTrace()

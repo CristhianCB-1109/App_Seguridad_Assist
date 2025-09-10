@@ -184,12 +184,6 @@ fun LoginScreenPreview() {
     }
 }
 
-// 🔑 CAMBIO 1: Hacemos los campos opcionales para evitar errores de null
-data class LoginRequest(
-    val email: String?,
-    val contrasena: String?,
-    val clave_acceso: String?
-)
 
 data class LoginResult(
     val errorMessage: String? = null,
