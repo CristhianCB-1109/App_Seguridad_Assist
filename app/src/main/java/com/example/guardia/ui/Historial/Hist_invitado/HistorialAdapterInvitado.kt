@@ -15,6 +15,7 @@ class HistorialAdapterInvitado(private val lista: List<RegistroInvitado>) :
         val tvnombre: TextView = itemView.findViewById(R.id.tvnombre)
         val tvdni: TextView = itemView.findViewById(R.id.tvdni)
         val tvnumero: TextView = itemView.findViewById(R.id.tvnumero)
+        val tvFechaRegistro: TextView = itemView.findViewById(R.id.tvFechaRegistro)
 
     }
 
@@ -29,6 +30,7 @@ class HistorialAdapterInvitado(private val lista: List<RegistroInvitado>) :
         holder.tvnombre.text = registro.nombre
         holder.tvdni.text = "Dni: ${registro.dni}"
         holder.tvnumero.text = "Numero: ${registro.numero}"
+        holder.tvFechaRegistro.text = "Fecha: ${registro.fechaRegistro}"
 
     }
 

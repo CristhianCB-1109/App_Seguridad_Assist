@@ -22,7 +22,7 @@ class RegistrarAlumnoViewModel(
     fun validarQR(qrData: String) {
         viewModelScope.launch {
             try {
-                // Aquí puedes parsear JSON o usar AlumnoRepository remoto/mock
+
                 val alumno = alumnoRepository.getAlumno(qrData)
 
                 _uiState.value = RegistrarAlumnoUiState(

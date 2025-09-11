@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.guardia.Data.Local.entities.RegistroAlumno
 import com.example.guardia.Data.Local.entities.RegistroInvitado
 
-@Database(entities = [RegistroInvitado::class, RegistroAlumno::class], version = 2)
+@Database(entities = [RegistroInvitado::class, RegistroAlumno::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun registroAlumnoDao(): RegistroAlumnoDao

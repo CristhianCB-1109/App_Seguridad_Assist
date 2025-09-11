@@ -36,6 +36,15 @@
         android:textSize="15sp"
         android:textColor="#424242"
         android:layout_marginBottom="6dp"/>
+    <TextView
+        android:id="@+id/tvFechaRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fecha: 2025-09-10 12:34:56"
+        android:textSize="14sp"
+        android:textColor="#424242"
+        android:layout_marginBottom="6dp" />
+
 
 
 </LinearLayout>

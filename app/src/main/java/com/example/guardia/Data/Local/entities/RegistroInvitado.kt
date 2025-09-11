@@ -9,5 +9,7 @@ data class RegistroInvitado(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val nombre: String,
     val dni: String,
-    val numero: String
+    val numero: String,
+    val fechaRegistro: String
+
 )
